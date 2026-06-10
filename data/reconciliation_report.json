@@ -1,0 +1,86 @@
+{
+    "card_reconciliation": {
+        "summary": {
+            "total_card_lines": 84,
+            "reconciled_matches": 76,
+            "discrepancies": 3,
+            "duplicates": 1,
+            "unmatched_ledger": 1,
+            "unmatched_card": 3,
+            "reconciled_ratio": 96.34146341463415
+        },
+        "unmatched_ledger_details": [
+            {
+                "id": "led_264a780d",
+                "date": "2026-06-29",
+                "amount": 124.8,
+                "currency": "USD",
+                "description": "Amazon - Office Equipment"
+            }
+        ],
+        "unmatched_card_details": [
+            {
+                "id": "crd_cd1461ae",
+                "date": "2026-05-14",
+                "amount": 42.5,
+                "currency": "USD",
+                "description": "UBER *TRIP RIDE",
+                "cardholder": "Alice Johnson"
+            },
+            {
+                "id": "crd_c74cfb78",
+                "date": "2026-06-12",
+                "amount": 185.5,
+                "currency": "USD",
+                "description": "THE STEAKHOUSE CHICAGO",
+                "cardholder": "Jane Doe"
+            },
+            {
+                "id": "crd_18124945",
+                "date": "2026-06-22",
+                "amount": 450.0,
+                "currency": "USD",
+                "description": "ELECTRONICS DIRECT ONLINE",
+                "cardholder": "Bob Brown"
+            }
+        ],
+        "discrepancies_details": [
+            {
+                "ledger_id": "led_9fcfc98d",
+                "ledger_desc": "Shopify CAD Storefront",
+                "card_id": "crd_e5bdd36a",
+                "card_desc": "SHOPIFY SUBSCRIPTION OTTAWA ON",
+                "ledger_amount": 200.0,
+                "card_amount": 148.5,
+                "variance": -51.5
+            },
+            {
+                "ledger_id": "led_bf5a09cf",
+                "ledger_desc": "Bob Brown Chipotle lunch",
+                "card_id": "crd_65a7e4d5",
+                "card_desc": "CHIPOTLE 1234 DENVER CO",
+                "ledger_amount": 15.0,
+                "card_amount": 18.5,
+                "variance": 3.5
+            },
+            {
+                "ledger_id": "led_75433628",
+                "ledger_desc": "JetBrains Subscription",
+                "card_id": "crd_f60ac85d",
+                "card_desc": "JETBRAINS S.R.O. PRAGUE",
+                "ledger_amount": 100.0,
+                "card_amount": 102.45,
+                "variance": 2.45
+            }
+        ]
+    },
+    "bank_reconciliation": {
+        "summary": {
+            "total_bank_lines": 24,
+            "reconciled_matches": 24,
+            "unmatched_ledger": 0,
+            "unmatched_bank": 0,
+            "reconciled_ratio": 100.0
+        }
+    }
+}
