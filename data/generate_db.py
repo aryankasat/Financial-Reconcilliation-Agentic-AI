@@ -9,6 +9,8 @@ def get_uuid(prefix):
 
 def generate_database():
     db_path = os.path.join(os.path.dirname(__file__), "reconciliation.db")
+    if os.path.exists(db_path):
+        os.remove(db_path)
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
@@ -48,6 +50,7 @@ def generate_database():
         value_date TEXT NOT NULL,
         description TEXT NOT NULL,
         amount REAL NOT NULL,
+        currency TEXT NOT NULL,
         reference_number TEXT,
         running_balance REAL NOT NULL,
         FOREIGN KEY (account_id) REFERENCES accounts(id)
@@ -63,6 +66,9 @@ def generate_database():
         posting_date TEXT NOT NULL,
         description TEXT NOT NULL,
         amount REAL NOT NULL,
+        currency TEXT NOT NULL,
+        foreign_amount REAL,
+        foreign_currency TEXT,
         cardholder_name TEXT NOT NULL,
         card_last_four TEXT NOT NULL,
         mcc TEXT NOT NULL,
@@ -419,6 +425,147 @@ def generate_database():
     })
     # NO LEDGER RECORD
 
+    # CASE 9: Contextual Normalization Required (DBA/Legal names vs. Product names)
+    # A: Airtable vs Formagrid (Apr 15)
+    crd_id_c1 = get_uuid("crd")
+    led_id_c1 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_c1, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_04",
+        "transaction_date": "2026-04-15", "posting_date": "2026-04-16",
+        "description": "FORMAGRID INC SF CA", "amount": 320.00,
+        "cardholder_name": "John Smith", "card_last_four": "2222", "mcc": "7372",
+        "merchant_name": "Formagrid Inc", "auth_code": "392019"
+    })
+    ledger_records.append({
+        "id": led_id_c1, "transaction_date": "2026-04-15", "cleared_date": "2026-04-16",
+        "amount": 320.00, "currency": "USD", "description": "Airtable CRM Subscription",
+        "account_id": "acc_card_corp", "reference_number": "AIR-2026-APR", "status": "POSTED",
+        "category": "Software & Subscriptions", "created_at": "2026-04-15 10:00:00"
+    })
+
+    # B: 1Password vs AgileBits (May 12)
+    crd_id_c2 = get_uuid("crd")
+    led_id_c2 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_c2, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_05",
+        "transaction_date": "2026-05-12", "posting_date": "2026-05-13",
+        "description": "AGILEBITS INC TORONTO ON", "amount": 72.00,
+        "cardholder_name": "John Smith", "card_last_four": "2222", "mcc": "7372",
+        "merchant_name": "Agilebits Inc", "auth_code": "190283"
+    })
+    ledger_records.append({
+        "id": led_id_c2, "transaction_date": "2026-05-12", "cleared_date": "2026-05-13",
+        "amount": 72.00, "currency": "USD", "description": "1Password Team License",
+        "account_id": "acc_card_corp", "reference_number": "1PW-2026-MAY", "status": "POSTED",
+        "category": "Software & Subscriptions", "created_at": "2026-05-12 11:30:00"
+    })
+
+    # C: Instagram Ads vs Meta (May 25)
+    crd_id_c3 = get_uuid("crd")
+    led_id_c3 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_c3, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_05",
+        "transaction_date": "2026-05-25", "posting_date": "2026-05-26",
+        "description": "META ADS *10283748 SF", "amount": 1250.00,
+        "cardholder_name": "Alice Johnson", "card_last_four": "3333", "mcc": "7311",
+        "merchant_name": "Meta Ads", "auth_code": "581902"
+    })
+    ledger_records.append({
+        "id": led_id_c3, "transaction_date": "2026-05-25", "cleared_date": "2026-05-26",
+        "amount": 1250.00, "currency": "USD", "description": "Instagram Ads Run",
+        "account_id": "acc_card_corp", "reference_number": "MET-2026-0525", "status": "POSTED",
+        "category": "Advertising & Marketing", "created_at": "2026-05-25 15:45:00"
+    })
+
+    # D: Twitter Blue vs X.com (June 08)
+    crd_id_c4 = get_uuid("crd")
+    led_id_c4 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_c4, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_06",
+        "transaction_date": "2026-06-08", "posting_date": "2026-06-09",
+        "description": "X.COM CORP BILLING CA", "amount": 84.00,
+        "cardholder_name": "Jane Doe", "card_last_four": "1111", "mcc": "4899",
+        "merchant_name": "X.com", "auth_code": "291083"
+    })
+    ledger_records.append({
+        "id": led_id_c4, "transaction_date": "2026-06-08", "cleared_date": "2026-06-09",
+        "amount": 84.00, "currency": "USD", "description": "Twitter Premium Verification",
+        "account_id": "acc_card_corp", "reference_number": "TW-BLUE-2026", "status": "POSTED",
+        "category": "Software & Subscriptions", "created_at": "2026-06-08 09:00:00"
+    })
+
+    # E: WeWork vs WW Operating (June 01)
+    crd_id_c5 = get_uuid("crd")
+    led_id_c5 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_c5, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_06",
+        "transaction_date": "2026-06-01", "posting_date": "2026-06-02",
+        "description": "WW *OPERATING LLC NY", "amount": 450.00,
+        "cardholder_name": "Bob Brown", "card_last_four": "4444", "mcc": "6513",
+        "merchant_name": "WW Operating LLC", "auth_code": "771890"
+    })
+    ledger_records.append({
+        "id": led_id_c5, "transaction_date": "2026-06-01", "cleared_date": "2026-06-02",
+        "amount": 450.00, "currency": "USD", "description": "WeWork Hot Desks",
+        "account_id": "acc_card_corp", "reference_number": "WEWORK-2026-JUN", "status": "POSTED",
+        "category": "Rent & Facilities", "created_at": "2026-06-01 08:30:00"
+    })
+
+    # CASE 10: Multi-Currency Transactions (Currency Normalization)
+    # A: Exact Foreign Match (EUR)
+    crd_id_curr1 = get_uuid("crd")
+    led_id_curr1 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_curr1, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_05",
+        "transaction_date": "2026-05-18", "posting_date": "2026-05-19",
+        "description": "JETBRAINS DEUTSCHLAND GMBH MUNICH", "amount": 163.50, "currency": "USD",
+        "foreign_amount": 150.00, "foreign_currency": "EUR",
+        "cardholder_name": "John Smith", "card_last_four": "2222", "mcc": "7372",
+        "merchant_name": "JetBrains", "auth_code": "492019"
+    })
+    ledger_records.append({
+        "id": led_id_curr1, "transaction_date": "2026-05-18", "cleared_date": "2026-05-19",
+        "amount": 150.00, "currency": "EUR", "description": "SaaS Subscription EUR",
+        "account_id": "acc_card_corp", "reference_number": "EUR-JB-990", "status": "POSTED",
+        "category": "Software & Subscriptions", "created_at": "2026-05-18 10:30:00"
+    })
+
+    # B: Foreign Exchange Fee discrepancy (GBP)
+    crd_id_curr2 = get_uuid("crd")
+    led_id_curr2 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_curr2, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_06",
+        "transaction_date": "2026-06-05", "posting_date": "2026-06-06",
+        "description": "THE SCRUM HALF LONDON", "amount": 104.20, "currency": "USD",
+        "foreign_amount": 80.00, "foreign_currency": "GBP",
+        "cardholder_name": "John Smith", "card_last_four": "2222", "mcc": "5812",
+        "merchant_name": "The Scrum Half Pub", "auth_code": "881920"
+    })
+    ledger_records.append({
+        "id": led_id_curr2, "transaction_date": "2026-06-05", "cleared_date": "2026-06-06",
+        "amount": 80.00, "currency": "GBP", "description": "Team Dinner in London",
+        "account_id": "acc_card_corp", "reference_number": "GBP-DN-002", "status": "POSTED",
+        "category": "Meals & Entertainment", "created_at": "2026-06-05 20:00:00"
+    })
+
+    # C: Multi-currency amount mismatch (Double Conversion / drift) (CAD)
+    crd_id_curr3 = get_uuid("crd")
+    led_id_curr3 = get_uuid("led")
+    card_records.append({
+        "id": crd_id_curr3, "account_id": "acc_card_corp", "statement_id": "stmt_card_2026_04",
+        "transaction_date": "2026-04-10", "posting_date": "2026-04-11",
+        "description": "SHOPIFY SUBSCRIPTION OTTAWA ON", "amount": 148.50, "currency": "USD",
+        "foreign_amount": 202.00, "foreign_currency": "CAD",
+        "cardholder_name": "Jane Doe", "card_last_four": "1111", "mcc": "7372",
+        "merchant_name": "Shopify", "auth_code": "991028"
+    })
+    ledger_records.append({
+        "id": led_id_curr3, "transaction_date": "2026-04-10", "cleared_date": "2026-04-11",
+        "amount": 200.00, "currency": "CAD", "description": "Shopify CAD Storefront",
+        "account_id": "acc_card_corp", "reference_number": "CAD-SH-091", "status": "POSTED",
+        "category": "Software & Subscriptions", "created_at": "2026-04-10 14:00:00"
+    })
+
     # 4. Generate Checking Account Activity (Payroll, Rent, Wire Inflows, Card Payments)
     # Start checking balance at $150,000.00
     checking_balance = 150000.00
@@ -585,17 +732,21 @@ def generate_database():
 
     # Card statement lines
     for r in card_records:
+        currency = r.get("currency", "USD")
+        foreign_amount = r.get("foreign_amount", None)
+        foreign_currency = r.get("foreign_currency", None)
         cursor.execute("""
-        INSERT INTO card_statement_lines (id, account_id, statement_id, transaction_date, posting_date, description, amount, cardholder_name, card_last_four, mcc, merchant_name, auth_code)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """, (r["id"], r["account_id"], r["statement_id"], r["transaction_date"], r["posting_date"], r["description"], r["amount"], r["cardholder_name"], r["card_last_four"], r["mcc"], r["merchant_name"], r["auth_code"]))
+        INSERT INTO card_statement_lines (id, account_id, statement_id, transaction_date, posting_date, description, amount, currency, foreign_amount, foreign_currency, cardholder_name, card_last_four, mcc, merchant_name, auth_code)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """, (r["id"], r["account_id"], r["statement_id"], r["transaction_date"], r["posting_date"], r["description"], r["amount"], currency, foreign_amount, foreign_currency, r["cardholder_name"], r["card_last_four"], r["mcc"], r["merchant_name"], r["auth_code"]))
 
     # Bank statement lines
     for r in bank_records:
+        currency = r.get("currency", "USD")
         cursor.execute("""
-        INSERT INTO bank_statement_lines (id, account_id, statement_id, transaction_date, value_date, description, amount, reference_number, running_balance)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """, (r["id"], r["account_id"], r["statement_id"], r["transaction_date"], r["value_date"], r["description"], r["amount"], r["reference_number"], r["running_balance"]))
+        INSERT INTO bank_statement_lines (id, account_id, statement_id, transaction_date, value_date, description, amount, currency, reference_number, running_balance)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """, (r["id"], r["account_id"], r["statement_id"], r["transaction_date"], r["value_date"], r["description"], r["amount"], currency, r["reference_number"], r["running_balance"]))
 
     conn.commit()
 

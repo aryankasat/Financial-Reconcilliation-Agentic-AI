@@ -131,15 +131,48 @@ The dataset includes standard matches as well as the following intentional edge 
 
 ### 6. Card Payment Loop
 - **April Statement Autopay**:
-  - Checking account pays April credit card bill of `$2,749.72` on `2026-05-20`.
-  - Bank statement withdrawal: `-$2,749.72` on `2026-05-21` (1-day clearing lag).
-  - Card statement credit: `-$2,749.72` on `2026-05-20`.
+  - Checking account pays April credit card bill of `$3,218.22` on `2026-05-20` (includes April card charges, the Airtable charge of `$320.00`, and the Shopify CAD transaction of `$148.50`).
+  - Bank statement withdrawal: `-$3,218.22` on `2026-05-21` (1-day clearing lag).
+  - Card statement credit: `-$3,218.22` on `2026-05-20`.
   - Ledger entries on both Bank ledger (`acc_checking`) and Credit Card ledger (`acc_card_corp`) match.
 - **May Statement Autopay**:
-  - Checking account pays May credit card bill of `$3,287.58` on `2026-06-20`.
-  - Bank statement withdrawal: `-$3,287.58` on `2026-06-22` (June 20 was a Saturday, so it cleared on Monday).
-  - Card statement credit: `-$3,287.58` on `2026-06-20`.
+  - Checking account pays May credit card bill of `$4,773.08` on `2026-06-20` (includes May card charges, the 1Password charge of `$72.00`, the Instagram Ads charge of `$1,250.00`, and the JetBrains EUR transaction of `$163.50`).
+  - Bank statement withdrawal: `-$4,773.08` on `2026-06-22` (June 20 was a Saturday, so it cleared on Monday).
+  - Card statement credit: `-$4,773.08` on `2026-06-20`.
   - Ledger entries on both Bank ledger (`acc_checking`) and Credit Card ledger (`acc_card_corp`) match.
+
+### 7. Contextual Normalization Required (DBA/Legal names vs. Product names)
+To test the agent's ability to perform contextual normalization (e.g. mapping legal entities/DBA names to actual product descriptions):
+- **Airtable vs Formagrid** (Apr 15):
+  - Ledger: `"Airtable CRM Subscription"` for `$320.00`
+  - Card Statement: `"FORMAGRID INC SF CA"` for `$320.00`
+- **1Password vs AgileBits** (May 12):
+  - Ledger: `"1Password Team License"` for `$72.00`
+  - Card Statement: `"AGILEBITS INC TORONTO ON"` for `$72.00`
+- **Instagram Ads vs Meta** (May 25):
+  - Ledger: `"Instagram Ads Run"` for `$1,250.00`
+  - Card Statement: `"META ADS *10283748 SF"` for `$1,250.00`
+- **Twitter Blue vs X.com** (June 08):
+  - Ledger: `"Twitter Premium Verification"` for `$84.00`
+  - Card Statement: `"X.COM CORP BILLING CA"` for `$84.00`
+- **WeWork vs WW Operating** (June 01):
+  - Ledger: `"WeWork Hot Desks"` for `$450.00`
+  - Card Statement: `"WW *OPERATING LLC NY"` for `$450.00`
+
+### 8. Multi-Currency Transactions (Currency Normalization)
+To test the agent's ability to normalize and match entries recorded in different currencies (e.g. matching a ledger entry recorded in a foreign currency to a card statement billed in USD containing foreign currency metadata):
+- **Exact Match (EUR)**:
+  - Ledger: `"SaaS Subscription EUR"` of `150.00 EUR` on `2026-05-18`
+  - Card Statement: `163.50 USD` billing amount, with foreign amount `150.00` and foreign currency `"EUR"`.
+  - *Reconciliation*: Match on foreign amount (`150.00 EUR`).
+- **Exchange Fee Discrepancy (GBP)**:
+  - Ledger: `"Team Dinner in London"` of `80.00 GBP` on `2026-06-05`
+  - Card Statement: `104.20 USD` billing amount, with foreign amount `80.00` and foreign currency `"GBP"`.
+  - *Reconciliation*: Match on foreign amount (`80.00 GBP`).
+- **Foreign Amount Mismatch (CAD)**:
+  - Ledger: `"Shopify CAD Storefront"` of `200.00 CAD` on `2026-04-10`
+  - Card Statement: `148.50 USD` billing amount, with foreign amount `202.00` and foreign currency `"CAD"`.
+  - *Reconciliation*: Mismatch in both billing and foreign amount (200.00 CAD in ledger vs. 202.00 CAD on card statement). This represents an exchange rate adjustment fee or conversion discrepancy.
 
 ---
 
