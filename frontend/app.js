@@ -416,6 +416,22 @@ function renderExceptionDetails(exc) {
                         ${isAuto ? 'Apply Adjustment & Close Exception' : 'Log Adjustment (CEO Override)'}
                     </button>
                 ` : ""}
+                
+                ${item.agent_langsmith_trace_url ? `
+                    <div style="margin-top: 16px; border-top: 1px dashed rgba(0,0,0,0.12); padding-top: 16px;">
+                        <span class="fix-sql-label" style="color: var(--accent); font-weight:700;">LangSmith Observability Trace:</span>
+                        <a href="${item.agent_langsmith_trace_url}" target="_blank" class="btn btn-outline btn-sm w-full" style="display:inline-flex; justify-content:center; text-decoration:none; margin-top:4px; font-weight:600; border-color: var(--accent); color: var(--accent); background-color: var(--accent-light);">
+                            🔍 View Live Agent Trace Graph ↗
+                        </a>
+                    </div>
+                ` : `
+                    <div style="margin-top: 16px; border-top: 1px dashed rgba(0,0,0,0.12); padding-top: 16px;">
+                        <span class="fix-sql-label">LangSmith Observability Trace:</span>
+                        <button class="btn btn-outline btn-sm w-full" disabled style="opacity:0.6; cursor:not-allowed; display:inline-flex; justify-content:center; margin-top:4px;" title="To trace live graph executions, configure LANGCHAIN_API_KEY in your local .env file.">
+                            🚫 Trace Offline (Configure LANGCHAIN_API_KEY in .env)
+                        </button>
+                    </div>
+                `}
             </div>
         </div>
     `;

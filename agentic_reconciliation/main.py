@@ -109,7 +109,22 @@ def run_agentic_pipeline(single_id=None):
             "messages": []
         }
         
-        result = reconciliation_graph.invoke(initial_state)
+        # Invoke LangGraph wrapped in collect_runs to capture LangSmith trace telemetry
+        from langchain_core.tracers.context import collect_runs
+        from langsmith import Client
+        
+        run_url = None
+        with collect_runs() as cb:
+            result = reconciliation_graph.invoke(initial_state)
+            
+        if cb.traced_runs:
+            try:
+                ls_client = Client()
+                run_url = ls_client.get_run_url(run=cb.traced_runs[0])
+                print(f"  -> {STYLE_BOLD_CYAN}LangSmith Trace URL:{STYLE_RESET} {run_url}")
+            except Exception as e:
+                # Fallback silently if credentials or internet are not configured
+                pass
         
         # Extract outcomes
         category = result.get("category", "Other")
@@ -163,7 +178,8 @@ def run_agentic_pipeline(single_id=None):
             "agent_decision_status": decision_status,
             "agent_recommended_action": recommended_action,
             "agent_suggested_fix": suggested_fix,
-            "agent_db_queries": db_queries
+            "agent_db_queries": db_queries,
+            "agent_langsmith_trace_url": run_url
         })
         enriched_items.append(enriched_item)
         print_separator("-", 50, STYLE_DIM)
