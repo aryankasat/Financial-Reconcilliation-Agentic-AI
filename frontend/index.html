@@ -27,20 +27,25 @@
             </div>
 
             <nav class="nav-menu">
-                <button class="nav-btn active" data-tab="dashboard">
-                    <span class="icon">📊</span> Overview Dashboard
-                </button>
-                <button class="nav-btn" data-tab="pipelines">
-                    <span class="icon">⚙️</span> Run Pipelines
+                <div class="nav-group-title">Credit Card Reconciliation</div>
+                <button class="nav-btn active" data-tab="pipelines">
+                    <span class="icon">⚙️</span> Reconcilliation Pipelines
                 </button>
                 <button class="nav-btn" data-tab="exceptions">
-                    <span class="icon">🔍</span> Agent Exception Center
+                    <span class="icon">🔍</span> Agent Center
                 </button>
                 <button class="nav-btn" data-tab="explorer">
                     <span class="icon">💾</span> Database Explorer
                 </button>
+
+                <div class="nav-group-title">Upcoming Modules</div>
                 <button class="nav-btn" disabled style="opacity: 0.6; cursor: not-allowed;">
                     <span class="icon">📈</span> Loan Reconciliation <span class="badge badge-beta">Beta</span>
+                </button>
+
+                <div class="nav-group-title">General</div>
+                <button class="nav-btn" data-tab="dashboard">
+                    <span class="icon">📊</span> Overview Dashboard
                 </button>
             </nav>
 
@@ -49,7 +54,6 @@
                     <span class="indicator-dot online"></span>
                     <span>System Online</span>
                 </div>
-                <button id="reset-db-btn" class="btn btn-secondary btn-sm">Reset Database</button>
             </div>
         </aside>
 
@@ -58,8 +62,8 @@
             <!-- Header -->
             <header class="main-header">
                 <div class="header-title">
-                    <h2 id="tab-title">Overview Dashboard</h2>
-                    <p id="tab-subtitle">Real-time status of books and statement reconciliation.</p>
+                    <h2 id="tab-title">Reconcilliation Pipelines</h2>
+                    <p id="tab-subtitle">Run rule-matching scripts and trigger LangGraph exception handlers.</p>
                 </div>
                 <div class="header-actions">
                     <div class="env-badge" id="groq-badge">
@@ -70,87 +74,111 @@
             </header>
 
             <!-- TAB: Dashboard -->
-            <section id="tab-dashboard" class="tab-panel active">
+            <section id="tab-dashboard" class="tab-panel">
                 <!-- KPI Banner -->
                 <div class="kpi-grid">
+                    <!-- CARD 1: Exact/Fuzzy rule matches -->
                     <div class="kpi-card">
-                        <div class="kpi-title">Corporate Card Reconciled</div>
+                        <div class="kpi-title">Exact/Fuzzy Rule Matches</div>
                         <div class="kpi-value-row">
-                            <span class="kpi-value" id="card-ratio">--%</span>
-                            <span class="kpi-change positive" id="card-ratio-change">Statement Acc</span>
+                            <span class="kpi-value" id="card-rule-ratio">--%</span>
+                            <span class="kpi-change positive">Rule Matches</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar" id="card-ratio-bar" style="width: 0%"></div>
+                            <div class="progress-bar" id="card-rule-bar" style="width: 0%"></div>
                         </div>
-                        <div class="kpi-footer" id="card-kpi-sub">-- of -- items matched</div>
+                        <div class="kpi-footer" id="card-rule-sub">-- statement lines matched</div>
                     </div>
 
+                    <!-- CARD 2: Amount left after exact/fuzzy match -->
                     <div class="kpi-card">
-                        <div class="kpi-title">Bank Account Reconciled</div>
+                        <div class="kpi-title">Amount Pending Review</div>
                         <div class="kpi-value-row">
-                            <span class="kpi-value" id="bank-ratio">--%</span>
-                            <span class="kpi-change positive">acc_checking</span>
+                            <span class="kpi-value text-warning" id="card-variance-left">$--</span>
+                            <span class="kpi-badge">Unreconciled</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar bg-success" id="bank-ratio-bar" style="width: 0%"></div>
+                            <div class="progress-bar bg-warning" id="card-variance-bar" style="width: 0%"></div>
                         </div>
-                        <div class="kpi-footer" id="bank-kpi-sub">-- of -- items matched</div>
+                        <div class="kpi-footer" id="card-variance-sub">-- issues unresolved</div>
                     </div>
 
+                    <!-- CARD 3: Percent done by agents -->
                     <div class="kpi-card">
-                        <div class="kpi-title">Manual Work Reduction</div>
+                        <div class="kpi-title">AI Agent Auto-Resolution</div>
                         <div class="kpi-value-row">
-                            <span class="kpi-value text-accent">57.1%</span>
-                            <span class="kpi-badge">Auto-resolved</span>
+                            <span class="kpi-value text-accent" id="agent-resolved-ratio">--%</span>
+                            <span class="kpi-change positive">Agent Decisions</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar bg-accent" style="width: 57.1%"></div>
+                            <div class="progress-bar bg-accent" id="agent-resolved-bar" style="width: 0%"></div>
                         </div>
-                        <div class="kpi-footer">4 of 7 exceptions resolved by AI</div>
+                        <div class="kpi-footer" id="agent-resolved-sub">-- of -- exceptions auto-resolved</div>
                     </div>
 
+                    <!-- CARD 4: Human review counts -->
                     <div class="kpi-card">
-                        <div class="kpi-title">Fraud Prevention Risk</div>
+                        <div class="kpi-title">Escaped to Human Review</div>
                         <div class="kpi-value-row">
-                            <span class="kpi-value text-warning" id="fraud-value">$450.00</span>
-                            <span class="kpi-change negative">1 Alert Flagged</span>
+                            <span class="kpi-value text-error" id="human-review-count">-- Items</span>
+                            <span class="kpi-change negative">Manual </span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar bg-warning" style="width: 100%"></div>
+                            <div class="progress-bar bg-error" id="human-review-bar" style="width: 0%"></div>
                         </div>
-                        <div class="kpi-footer">High-risk merchant transaction flagged</div>
+                        <div class="kpi-footer" id="human-review-sub">Requires manual adjustments</div>
                     </div>
                 </div>
 
-                <!-- Split view -->
+                <!-- Split view: Human Tickets vs. Auto-Resolved -->
                 <div class="grid-2col">
-                    <!-- Exceptions List -->
+                    <!-- Column 1: Human Tickets -->
                     <div class="card col-card">
                         <div class="card-header">
-                            <h3>Flagged Reconciliation Exceptions</h3>
-                            <span class="badge badge-error" id="exceptions-count">0 unresolved</span>
+                            <h3>Tickets Requiring Human Action</h3>
+                            <span class="badge badge-error" id="dashboard-human-count">0 tickets</span>
                         </div>
                         <div class="card-body">
-                            <p class="description">Rule-based matches are complete. These exceptions require
-                                categorization and root cause resolution.</p>
-
-                            <div class="exceptions-list" id="dashboard-exceptions-list">
+                            <p class="description">Exceptions flagged by AI that require manual receipt collections, CEO
+                                policy checkups, or card fraud freeze locks.</p>
+                            <div class="exceptions-list" id="dashboard-human-exceptions-list">
                                 <!-- Loaded dynamically -->
                                 <div class="empty-state">
                                     <div class="empty-icon">✓</div>
-                                    <p>No unresolved exceptions found. Your general ledger is perfectly reconciled!</p>
+                                    <p>No human action required. All outstanding issues have been auto-adjusted!</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Flow Diagram & Metrics -->
+                    <!-- Column 2: Auto-Resolved Adjustments -->
                     <div class="card col-card">
                         <div class="card-header">
-                            <h3>LangGraph Agentic Resolution Flow</h3>
+                            <h3>AI Auto-Resolved Adjustments</h3>
+                            <span class="badge badge-success" id="dashboard-auto-count">0 resolved</span>
                         </div>
-                        <div class="card-body flex-col justify-between">
-                            <div class="agent-flow-viz">
+                        <div class="card-body">
+                            <p class="description">Minor anomalies (tips, international fees, timing differences)
+                                automatically posted to the general ledger by the agents.</p>
+                            <div class="exceptions-list" id="dashboard-auto-exceptions-list">
+                                <!-- Loaded dynamically -->
+                                <div class="empty-state">
+                                    <div class="empty-icon">✓</div>
+                                    <p>No auto-resolved adjustments present.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agentic Workflow card pushed down -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3>LangGraph Agentic Resolution Flow</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid-2col">
+                            <div class="agent-flow-viz" style="margin-bottom: 0;">
                                 <div class="flow-step" id="flow-categorise">
                                     <div class="step-num">1</div>
                                     <div class="step-details">
@@ -175,18 +203,24 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="quick-stats-row">
-                                <div class="quick-stat-item">
-                                    <h5>Avg. SQL Queries per RCA</h5>
-                                    <p>3.4 Queries</p>
-                                </div>
-                                <div class="quick-stat-item">
-                                    <h5>RCA SQL Success Rate</h5>
-                                    <p>100% (No errors)</p>
-                                </div>
-                                <div class="quick-stat-item">
-                                    <h5>Explainability</h5>
-                                    <p>100% Audited</p>
+                            <div class="flex-col justify-between"
+                                style="border-left: 1px solid var(--border-color); padding-left: 24px;">
+                                <p class="description" style="margin-bottom: 24px;">The agentic reconciliation pipeline
+                                    iterates sequentially to classify, audit, and output clear actions for book closure.
+                                    Traces are logged with 100% auditable query metrics.</p>
+                                <div class="quick-stats-row" style="border-top: none; padding-top: 0;">
+                                    <div class="quick-stat-item">
+                                        <h5>Avg. SQL Queries per RCA</h5>
+                                        <p>3.4 Queries</p>
+                                    </div>
+                                    <div class="quick-stat-item">
+                                        <h5>RCA SQL Success Rate</h5>
+                                        <p>100%</p>
+                                    </div>
+                                    <div class="quick-stat-item">
+                                        <h5>Explainability</h5>
+                                        <p>100% Audited</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -195,7 +229,7 @@
             </section>
 
             <!-- TAB: Pipelines -->
-            <section id="tab-pipelines" class="tab-panel">
+            <section id="tab-pipelines" class="tab-panel active">
                 <div class="grid-2col">
                     <!-- Pre-Matching Pipeline -->
                     <div class="card">

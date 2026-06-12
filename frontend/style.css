@@ -122,6 +122,18 @@ h1, h2, h3, h4, h5, h6 {
     flex-grow: 1;
 }
 
+.nav-group-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 20px;
+    margin-bottom: 6px;
+    padding-left: 12px;
+    opacity: 0.75;
+}
+
 .nav-btn {
     display: flex;
     align-items: center;
@@ -851,6 +863,38 @@ h1, h2, h3, h4, h5, h6 {
 .exc-tab-item.resolved {
     opacity: 0.6;
     background-color: #fafafa;
+}
+
+.exc-tab-item.resolved-auto {
+    border-left: 4px solid var(--success);
+    background-color: var(--success-light);
+}
+
+.exc-tab-item.resolved-auto:hover {
+    border-color: var(--success-border);
+    border-left-color: var(--success);
+}
+
+.exc-tab-item.resolved-auto.active {
+    border-color: var(--success);
+    box-shadow: 0 0 0 1px var(--success);
+    background-color: var(--success-light);
+}
+
+.exc-tab-item.requires-human {
+    border-left: 4px solid var(--error);
+    background-color: var(--error-light);
+}
+
+.exc-tab-item.requires-human:hover {
+    border-color: var(--error-border);
+    border-left-color: var(--error);
+}
+
+.exc-tab-item.requires-human.active {
+    border-color: var(--error);
+    box-shadow: 0 0 0 1px var(--error);
+    background-color: var(--error-light);
 }
 
 .exception-detail-main {
