@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Credit Card Reconciliation </title>
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon"></div>
+                <div class="brand-text">
+                    <h1>Credit Card Reconcilliation</h1>
+                    <span>RECONCILIATION SANDBOX</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <span class="icon">📊</span> Overview Dashboard
+                </button>
+                <button class="nav-btn" data-tab="pipelines">
+                    <span class="icon">⚙️</span> Run Pipelines
+                </button>
+                <button class="nav-btn" data-tab="exceptions">
+                    <span class="icon">🔍</span> Agent Exception Center
+                </button>
+                <button class="nav-btn" data-tab="explorer">
+                    <span class="icon">💾</span> Database Explorer
+                </button>
+                <button class="nav-btn" disabled style="opacity: 0.6; cursor: not-allowed;">
+                    <span class="icon">📈</span> Loan Reconciliation <span class="badge badge-beta">Beta</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="indicator-dot online"></span>
+                    <span>System Online</span>
+                </div>
+                <button id="reset-db-btn" class="btn btn-secondary btn-sm">Reset Database</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-title">
+                    <h2 id="tab-title">Overview Dashboard</h2>
+                    <p id="tab-subtitle">Real-time status of books and statement reconciliation.</p>
+                </div>
+                <div class="header-actions">
+                    <div class="env-badge" id="groq-badge">
+                        <span class="badge-dot"></span>
+                        <span id="groq-status-text">LLM Mode: Dry-Run</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB: Dashboard -->
+            <section id="tab-dashboard" class="tab-panel active">
+                <!-- KPI Banner -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Corporate Card Reconciled</div>
+                        <div class="kpi-value-row">
+                            <span class="kpi-value" id="card-ratio">--%</span>
+                            <span class="kpi-change positive" id="card-ratio-change">Statement Acc</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="card-ratio-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="kpi-footer" id="card-kpi-sub">-- of -- items matched</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-title">Bank Account Reconciled</div>
+                        <div class="kpi-value-row">
+                            <span class="kpi-value" id="bank-ratio">--%</span>
+                            <span class="kpi-change positive">acc_checking</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar bg-success" id="bank-ratio-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="kpi-footer" id="bank-kpi-sub">-- of -- items matched</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-title">Manual Work Reduction</div>
+                        <div class="kpi-value-row">
+                            <span class="kpi-value text-accent">57.1%</span>
+                            <span class="kpi-badge">Auto-resolved</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar bg-accent" style="width: 57.1%"></div>
+                        </div>
+                        <div class="kpi-footer">4 of 7 exceptions resolved by AI</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-title">Fraud Prevention Risk</div>
+                        <div class="kpi-value-row">
+                            <span class="kpi-value text-warning" id="fraud-value">$450.00</span>
+                            <span class="kpi-change negative">1 Alert Flagged</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar bg-warning" style="width: 100%"></div>
+                        </div>
+                        <div class="kpi-footer">High-risk merchant transaction flagged</div>
+                    </div>
+                </div>
+
+                <!-- Split view -->
+                <div class="grid-2col">
+                    <!-- Exceptions List -->
+                    <div class="card col-card">
+                        <div class="card-header">
+                            <h3>Flagged Reconciliation Exceptions</h3>
+                            <span class="badge badge-error" id="exceptions-count">0 unresolved</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="description">Rule-based matches are complete. These exceptions require
+                                categorization and root cause resolution.</p>
+
+                            <div class="exceptions-list" id="dashboard-exceptions-list">
+                                <!-- Loaded dynamically -->
+                                <div class="empty-state">
+                                    <div class="empty-icon">✓</div>
+                                    <p>No unresolved exceptions found. Your general ledger is perfectly reconciled!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flow Diagram & Metrics -->
+                    <div class="card col-card">
+                        <div class="card-header">
+                            <h3>LangGraph Agentic Resolution Flow</h3>
+                        </div>
+                        <div class="card-body flex-col justify-between">
+                            <div class="agent-flow-viz">
+                                <div class="flow-step" id="flow-categorise">
+                                    <div class="step-num">1</div>
+                                    <div class="step-details">
+                                        <h4>Categorisation Node</h4>
+                                        <p>Classify exceptions (Timing Diff, Missing Entry, Tip Variance)</p>
+                                    </div>
+                                </div>
+                                <div class="flow-connector"></div>
+                                <div class="flow-step" id="flow-rca">
+                                    <div class="step-num">2</div>
+                                    <div class="step-details">
+                                        <h4>RCA Agent (Safe DB Tool)</h4>
+                                        <p>Executes dynamic read-only SQL queries to locate offsets</p>
+                                    </div>
+                                </div>
+                                <div class="flow-connector"></div>
+                                <div class="flow-step" id="flow-decision">
+                                    <div class="step-num">3</div>
+                                    <div class="step-details">
+                                        <h4>Decision & Action Engine</h4>
+                                        <p>Declares AUTO_RESOLVED vs. REQUIRES_HUMAN_INTERVENTION</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quick-stats-row">
+                                <div class="quick-stat-item">
+                                    <h5>Avg. SQL Queries per RCA</h5>
+                                    <p>3.4 Queries</p>
+                                </div>
+                                <div class="quick-stat-item">
+                                    <h5>RCA SQL Success Rate</h5>
+                                    <p>100% (No errors)</p>
+                                </div>
+                                <div class="quick-stat-item">
+                                    <h5>Explainability</h5>
+                                    <p>100% Audited</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: Pipelines -->
+            <section id="tab-pipelines" class="tab-panel">
+                <div class="grid-2col">
+                    <!-- Pre-Matching Pipeline -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>1. Rule-Based Pre-Matching Engine</h3>
+                            <button id="run-matching-btn" class="btn btn-primary">Run Engine</button>
+                        </div>
+                        <div class="card-body">
+                            <p class="description">Clears perfect matches (amounts & dates match exactly), maps merchant
+                                legal names (DBA) to brands, and matches multi-currency charges using foreign amount
+                                metadata.</p>
+
+                            <div class="terminal-container">
+                                <div class="terminal-header">
+                                    <span class="terminal-title">reconciliation_engine/main.py</span>
+                                    <span class="terminal-indicator" id="matching-indicator">Idle</span>
+                                </div>
+                                <pre class="terminal-body"
+                                    id="matching-terminal">System idle. Ready to execute matching engine...</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Agent Exception Pipeline -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>2. LangGraph Agent Exception Handler</h3>
+                            <button id="run-agents-btn" class="btn btn-accent">Run AI Exceptions</button>
+                        </div>
+                        <div class="card-body">
+                            <p class="description">Uses categorization, safe SQL database queries, and decision agent
+                                steps to perform Root Cause Analysis (RCA) and determine the exact ledger fix or fraud
+                                locking action.</p>
+
+                            <div class="terminal-container">
+                                <div class="terminal-header">
+                                    <span class="terminal-title">agentic_reconciliation/main.py</span>
+                                    <span class="terminal-indicator" id="agents-indicator">Idle</span>
+                                </div>
+                                <pre class="terminal-body"
+                                    id="agents-terminal">System idle. Ready to execute agentic reconciliation...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: Exception Center -->
+            <section id="tab-exceptions" class="tab-panel">
+                <div class="exception-center-container">
+                    <div class="exception-sidebar">
+                        <h3>Flagged Exceptions</h3>
+                        <div class="exception-tabs" id="exception-items-list">
+                            <!-- Populated dynamically -->
+                            <p class="placeholder-text">Please run reconciliation pipelines to load exceptions.</p>
+                        </div>
+                    </div>
+
+                    <div class="exception-detail-main" id="exception-detail-content">
+                        <!-- Loaded dynamically when clicking an exception -->
+                        <div class="empty-detail-state">
+                            <span>🔍</span>
+                            <h3>Select an Exception</h3>
+                            <p>Choose an unresolved exception from the side list to inspect the AI agent's root cause
+                                analysis, reasoning steps, executed SQL statements, and recommended resolution.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: Database Explorer -->
+            <section id="tab-explorer" class="tab-panel">
+                <div class="explorer-container">
+                    <!-- DB Control Panel -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>SQL Query Console</h3>
+                            <span class="badge badge-info">Read-only SELECT queries</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="query-console-row">
+                                <textarea id="sql-query-input"
+                                    placeholder="SELECT * FROM ledger_entries WHERE status = 'PENDING';"></textarea>
+                                <div class="query-actions">
+                                    <button id="run-query-btn" class="btn btn-primary">Execute Query</button>
+                                    <span class="query-shortcuts-title">Quick Queries:</span>
+                                    <button class="btn btn-outline btn-sm quick-sql-btn"
+                                        data-sql="SELECT * FROM accounts;">List Accounts</button>
+                                    <button class="btn btn-outline btn-sm quick-sql-btn"
+                                        data-sql="SELECT * FROM ledger_entries ORDER BY transaction_date DESC LIMIT 10;">Recent
+                                        Ledger</button>
+                                    <button class="btn btn-outline btn-sm quick-sql-btn"
+                                        data-sql="SELECT * FROM card_statement_lines WHERE statement_id = 'stmt_card_2026_06' LIMIT 10;">June
+                                        Card Statement</button>
+                                </div>
+                            </div>
+
+                            <div class="query-result-container" id="query-result-area">
+                                <p class="placeholder-text">Query output will be displayed here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Table Browsing -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Browse Database Tables</h3>
+                            <div class="table-selectors">
+                                <button class="btn btn-outline btn-sm table-select-btn active"
+                                    data-table="accounts">accounts</button>
+                                <button class="btn btn-outline btn-sm table-select-btn"
+                                    data-table="ledger_entries">ledger_entries</button>
+                                <button class="btn btn-outline btn-sm table-select-btn"
+                                    data-table="card_statement_lines">card_statement_lines</button>
+                                <button class="btn btn-outline btn-sm table-select-btn"
+                                    data-table="bank_statement_lines">bank_statement_lines</button>
+                            </div>
+                        </div>
+                        <div class="card-body table-overflow" id="table-browse-content">
+                            <!-- Populated dynamically -->
+                            <div class="loader-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: Loan Reconciliation -->
+            <section id="tab-loans" class="tab-panel">
+                <!-- Showcase Info -->
+                <div class="alert alert-info">
+                    <span class="alert-icon">ℹ️</span>
+                    <div class="alert-text">
+                        <strong>Loan Reconciliation Beta Module</strong>
+                        <p>We are extending our agentic pipeline to support multi-million dollar loan amortization
+                            reconciliations. This preview showcases the schema alignments, typical interest calculation
+                            anomalies, and the workflow of our dedicated Loan Reconciliation Agent.</p>
+                    </div>
+                </div>
+
+                <div class="grid-2col mt-4">
+                    <!-- Loan Amortization Schedule vs Bank Outflows -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Active Loan Contract: SVB Venture Debt Loan</h3>
+                            <span class="badge badge-info">Amortization Period: 2026</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="loan-details-summary">
+                                <div class="detail-item"><strong>Principal Amount:</strong> <span>$1,200,000.00</span>
+                                </div>
+                                <div class="detail-item"><strong>Interest Rate:</strong> <span>6.5% (Accrual Rule:
+                                        Actual/360)</span></div>
+                                <div class="detail-item"><strong>Monthly Payment:</strong> <span>$36,820.00</span></div>
+                            </div>
+
+                            <h4>Amortization Schedule Ledger</h4>
+                            <div class="table-overflow">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Expected Principal</th>
+                                            <th>Expected Interest</th>
+                                            <th>Total Expected</th>
+                                            <th>Bank Cash Outflow</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2026-04-01</td>
+                                            <td>$30,320.00</td>
+                                            <td>$6,500.00</td>
+                                            <td>$36,820.00</td>
+                                            <td>-$36,820.00</td>
+                                            <td><span class="status-pill status-success">Reconciled</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2026-05-01</td>
+                                            <td>$30,484.23</td>
+                                            <td>$6,335.77</td>
+                                            <td>$36,820.00</td>
+                                            <td>-$36,820.00</td>
+                                            <td><span class="status-pill status-success">Reconciled</span></td>
+                                        </tr>
+                                        <tr class="table-row-error">
+                                            <td>2026-06-01</td>
+                                            <td>$30,649.32</td>
+                                            <td>$6,170.68</td>
+                                            <td>$36,820.00</td>
+                                            <td>-$36,650.00</td>
+                                            <td><span class="status-pill status-error">Discrepancy</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inquisitive Agent Drill-Down for Loan -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Loan Reconciliation Agent Investigation</h3>
+                            <span class="badge badge-accent">Interactive Trace</span>
+                        </div>
+                        <div class="card-body flex-col justify-between">
+                            <div class="loan-agent-drilldown">
+                                <div class="trace-bubble">
+                                    <div class="bubble-header">
+                                        <strong>Loan Categorisation Agent</strong>
+                                        <span class="time-stamp">06/01 10:14:15</span>
+                                    </div>
+                                    <p class="bubble-text"><strong>Discrepancy Flagged:</strong> $170.00 cash difference
+                                        on SVB Venture Debt Loan payment. Bank paid $36,650.00 vs schedule requirement
+                                        of $36,820.00.</p>
+                                    <p class="bubble-text"><strong>Classification:</strong> Interest Calculation/Accrual
+                                        Convention Mismatch.</p>
+                                </div>
+
+                                <div class="trace-bubble">
+                                    <div class="bubble-header">
+                                        <strong>Loan RCA Agent (Executed Queries)</strong>
+                                        <span class="time-stamp">06/01 10:14:17</span>
+                                    </div>
+                                    <pre class="bubble-code">SELECT contract_interest_convention, day_count_convention 
+FROM loan_contracts WHERE account_id = 'loan_svb_001';
+-- Result: "30/360"
+
+SELECT actual_interest_charged, days_accrued 
+FROM bank_accruals WHERE payment_date = '2026-06-01';
+-- Result: $6,000.68 interest charged on 31 actual days (May has 31 days).</pre>
+                                    <p class="bubble-text"><strong>RCA Findings:</strong> The bank calculated interest
+                                        based on the <em>Actual/360</em> method ($1,200,000 * 6.5% * 31 / 360 =
+                                        $6,716.66... adjusted for balance), whereas the general ledger expects a flat
+                                        30-day month calculation (<em>30/360</em> convention) which produced a variance
+                                        of $170.00. The bank is correct per the underlying debt contract amendment.</p>
+                                </div>
+
+                                <div class="trace-bubble">
+                                    <div class="bubble-header">
+                                        <strong>Loan Decision Agent Recommendation</strong>
+                                        <span class="time-stamp">06/01 10:14:18</span>
+                                    </div>
+                                    <p class="bubble-text"><strong>Recommended Action:</strong> Accept Bank's interest
+                                        calculation. Create an adjusting journal entry to account for the $170.00
+                                        interest variance in the general ledger.</p>
+                                    <div class="suggested-fix-box">
+                                        <code>Debit: Interest Expense $170.00<br>Credit: Accrued Interest Liability $170.00</code>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-accent w-full"
+                                onclick="alert('This is a simulated beta preview. Live loan reconciliations will be enabled once the Loan Amortization schema is connected.')">Simulate
+                                Accrual Adjustment</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Script loading -->
+    <script src="app.js"></script>
+</body>
+
+</html>
