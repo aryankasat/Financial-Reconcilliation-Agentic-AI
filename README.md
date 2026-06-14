@@ -10,26 +10,7 @@ It contains a generated SQLite database populated with 3 months of synthetic fin
 
 The diagram below maps the end-to-end transaction generation, rule-based matching, and agent-driven anomaly analysis pipeline:
 
-```mermaid
-flowchart TD
-    subgraph Data & Matching Engine
-        A[data/generate_db.py <br> Seed Database] -->|reconciliation.db| B[reconciliation_engine/main.py <br> Rule-Based Matching Engine]
-        B -->|Perfect Matches| C[Reconciled Matches]
-        B -->|Flagged Anomalies| D[data/reconciliation_report.json]
-    end
-
-    subgraph LangGraph Agentic Pipeline
-        D -->|Exceptions| E[Categorisation Agent <br> Classify Variance Type]
-        E -->|Category| F[RCA Agent <br> Dynamic SQL Diagnostics SELECT]
-        F -->|Root Cause Findings| G[Decision Agent <br> Auto-Resolve vs Human Intervention]
-        G -->|Enriched States| H[data/agent_reconciliation_report.json]
-    end
-
-    subgraph Review & Metrics
-        H --> I[evaluation/evaluate.py <br> Calculate Technical/Business Metrics]
-        H --> J[reports/reconciliation_final_report.md <br> Human-Readable Action Plan]
-    end
-```
+![Reconciliation & Agentic Workflow](assets/workflow_diagram.png)
 
 ### End-to-End Steps:
 1. **Database Seeding (`data/generate_db.py`)**: Deterministically seeds the SQLite database (`reconciliation.db`) containing checking, card, and ledger transactions with specific pre-configured discrepancies (lags, tips, currency differences, potential fraud).
