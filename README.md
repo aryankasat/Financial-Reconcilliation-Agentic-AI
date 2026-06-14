@@ -184,34 +184,6 @@ To start the MCP server on standard input/output (stdio) using the virtual envir
 ```bash
 ./venv/bin/python mcp_server.py
 ```
-
-### Client Integration:
-
-#### 1. Claude Desktop
-Add this server configuration block under `mcpServers` in your Claude Desktop configuration file (typically at `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
-```json
-{
-  "mcpServers": {
-    "apex-reconciliation-db": {
-      "command": "/Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/venv/bin/python",
-      "args": [
-        "/Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/mcp_server.py"
-      ]
-    }
-  }
-}
-```
-
-#### 2. Cursor IDE
-1. Open Cursor Settings (`Cmd + ,`).
-2. Go to **Features** -> **MCP**.
-3. Click **+ Add New MCP Server**.
-4. Set **Name** to `apex-reconciliation-db`.
-5. Set **Type** to `command` and enter the command:
-   ```bash
-   /Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/venv/bin/python /Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/mcp_server.py
-   ```
-
 ---
 
 ## Reconciliation Test Cases (Anomalies)
