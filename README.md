@@ -169,6 +169,51 @@ A human-readable summary detailing each discrepancy, its root cause, and concret
 
 ---
 
+## Model Context Protocol (MCP) Database Server
+
+This repository includes a Model Context Protocol (MCP) server that exposes the SQLite database to external AI clients (e.g., Claude Desktop, Cursor IDE). This allows your external assistant to dynamically run safe database queries, inspect schemas, and preview tables.
+
+### Exposed Tools:
+* **`run_query`**: Executes a read-only `SELECT` query safely on the database.
+* **`list_tables`**: Lists all tables (`accounts`, `ledger_entries`, `bank_statement_lines`, `card_statement_lines`) in the database.
+* **`get_table_schema`**: Retrieves the column details (data types, primary keys, nullability) for a given table.
+* **`preview_table`**: Previews the first N records (up to 200) from any table.
+
+### Running the Server Locally:
+To start the MCP server on standard input/output (stdio) using the virtual environment:
+```bash
+./venv/bin/python mcp_server.py
+```
+
+### Client Integration:
+
+#### 1. Claude Desktop
+Add this server configuration block under `mcpServers` in your Claude Desktop configuration file (typically at `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+```json
+{
+  "mcpServers": {
+    "apex-reconciliation-db": {
+      "command": "/Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/venv/bin/python",
+      "args": [
+        "/Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/mcp_server.py"
+      ]
+    }
+  }
+}
+```
+
+#### 2. Cursor IDE
+1. Open Cursor Settings (`Cmd + ,`).
+2. Go to **Features** -> **MCP**.
+3. Click **+ Add New MCP Server**.
+4. Set **Name** to `apex-reconciliation-db`.
+5. Set **Type** to `command` and enter the command:
+   ```bash
+   /Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/venv/bin/python /Users/aryankasat/Documents/Aryan/Codes/Financial-Reconcilliation-Agentic-AI/mcp_server.py
+   ```
+
+---
+
 ## Reconciliation Test Cases (Anomalies)
 
 The sandbox database contains specific, pre-configured financial anomalies that must be identified by matching pipelines or AI agents:
