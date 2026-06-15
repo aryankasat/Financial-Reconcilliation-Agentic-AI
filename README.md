@@ -16,9 +16,9 @@ The diagram below maps the end-to-end transaction generation, rule-based matchin
 
 Here is a quick walkthrough video demonstrating the reconciliation workspace and agentic workflow in action:
 
-<video src="assets/reconcilliation_agentic_ai.mov" width="100%" controls></video>
+<video src="assets/reconcilliation_agentic_ai.mp4" width="100%" controls></video>
 
-*If the video does not play in your markdown reader, you can view the file directly: [reconcilliation_agentic_ai.mov](assets/reconcilliation_agentic_ai.mov)*
+*If the video does not play in your markdown reader, you can view the file directly: [reconcilliation_agentic_ai.mp4](assets/reconcilliation_agentic_ai.mp4)*
 
 ### End-to-End Steps:
 1. **Database Seeding (`data/generate_db.py`)**: Deterministically seeds the SQLite database (`reconciliation.db`) containing checking, card, and ledger transactions with specific pre-configured discrepancies (lags, tips, currency differences, potential fraud).
