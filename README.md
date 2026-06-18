@@ -1,4 +1,4 @@
-# Credit Card & Bank Reconciliation Sandbox
+# Credit Card & Bank Reconciliation
 
 This repository provides a realistic, modular testing sandbox for developing and benchmarking **Agentic AI systems** in retail payments, banking, and general ledger reconciliation. 
 
