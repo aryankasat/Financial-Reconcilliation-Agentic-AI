@@ -51,8 +51,8 @@ The testing sandbox includes an automated evaluation suite (`evaluation/evaluate
 Key evaluation metrics measured:
 1. **Categorisation Accuracy**: Ratio of agent's classification matches (e.g., Timing Lag, Missing Entry, Fraud) to the real anomaly cause.
 2. **Workload Reduction Ratio (%)**: The percentage of exceptions that were auto-resolved safely by the AI agents relative to the total exception count.
-3. **Contextual Relevancy & Recall**:
-4. **Tool Call Accuracy**:
+3. **Contextual Relevancy & Recall**: Measures how precisely the agent queries the database to extract only relevant transaction details (relevancy) and whether it successfully retrieves all transaction and metadata records necessary to perform a complete root cause analysis (recall).
+4. **Tool Call Accuracy**: The ratio of successful, error-free tool invocations (such as syntactically correct and schema-conforming read-only SQL queries) to the total attempted tool queries during the investigation.
 
 ---
 
