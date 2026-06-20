@@ -51,8 +51,8 @@ The testing sandbox includes an automated evaluation suite (`evaluation/evaluate
 Key evaluation metrics measured:
 1. **Categorisation Accuracy**: Ratio of agent's classification matches (e.g., Timing Lag, Missing Entry, Fraud) to the real anomaly cause.
 2. **Workload Reduction Ratio (%)**: The percentage of exceptions that were auto-resolved safely by the AI agents relative to the total exception count.
-3. **Fraud Prevention Rate**: The system's effectiveness in flagging high-risk unauthorized items (e.g. unrecognized card charges) for manual locking.
-4. **Tool Use Metrics**: Count of SQL queries executed during the Root Cause Analysis (RCA) phase and the query success rate (ensuring no syntax errors or tables/columns exceptions).
+3. **Contextual Relevancy & Recall**:
+4. **Tool Call Accuracy**:
 
 ---
 
